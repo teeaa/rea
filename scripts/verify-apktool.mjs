@@ -1,7 +1,5 @@
 import { createHash } from "node:crypto";
-import { mkdtemp, readFile, rm, stat } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { readFile, stat } from "node:fs/promises";
 
 import { ApktoolResourceAnalysisService } from "../dist/application/apktool/ApktoolResourceAnalysisService.js";
 import { createApktoolResourceAnalysisProvider } from "../dist/composition/apktool.js";
