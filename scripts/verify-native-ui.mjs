@@ -258,23 +258,25 @@ try {
   };
 } finally {
   if (fixturePid !== undefined && fixtureIdentity?.state === "readable") {
-    const current = await observeProcessStartIdentity(fixturePid);
-    if (current !== undefined) {
-      assert.ok(
-        current.state === "readable" &&
-          current.identity === fixtureIdentity.identity,
-        "Fixture PID identity changed; refusing to signal another process",
-      );
-      try {
+    try {
+      const current = await observeProcessStartIdentity(fixturePid);
+      if (
+        current?.state === "readable" &&
+        current.identity === fixtureIdentity.identity
+      ) {
         process.kill(fixturePid, "SIGTERM");
-      } catch (cause) {
-        if (cause.code !== "ESRCH") throw cause;
       }
+    } catch {
+      // Best-effort process cleanup in finally block.
     }
   }
   if (child !== undefined && child.exitCode === null) {
-    child.kill("SIGTERM");
-    await childExit;
+    try {
+      child.kill("SIGTERM");
+      await childExit;
+    } catch {
+      // Best-effort process cleanup in finally block.
+    }
   }
   await rm(root, { recursive: true, force: true });
 }
